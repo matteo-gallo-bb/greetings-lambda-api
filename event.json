@@ -1,0 +1,9 @@
+{
+  "httpMethod": "GET",
+  "body": null,
+  "resource": "/greetings",
+  "queryStringParameters": {
+    "firstName": "Matteo",
+    "lastName": "Gallo"
+  }
+}

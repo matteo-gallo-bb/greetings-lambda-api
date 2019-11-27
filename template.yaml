@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  GreetingsLambdaFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Runtime: java11
+      Handler: com.mooveit.greetings.GreetingsLambdaHandler::handleRequest
+      Timeout: 10
+      CodeUri: ./target/lambda.jar
+      Events:
+        GetGreetings:
+          Type: Api
+          Properties:
+            Path: /greetings
+            Method: GET
+Outputs:
+  GreetingsLambdaApi:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/'
