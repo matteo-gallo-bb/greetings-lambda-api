@@ -100,12 +100,12 @@ curl -d '{"httpMethod": "GET", "queryStringParameters": {"firstName": "Matteo", 
 -X POST http://localhost:9001/2015-03-31/functions/GreetingsLambdaFunction/invocations
 ```
 
-Execution stats when running with Docker + aws-cli (with no REST call - sending request param "age"):
+Execution stats when running with Docker + aws-cli (with no REST call - sending request param "age" - and without static init of HttpClient):
 
 ```Java 11 performance
 Response time from Postman
-cold: 1007ms
-warm: 10ms (pikes 16ms)
+cold: 535 ms
+warm: 10 ms (pikes 16ms)
 
 Lambda execution
 Memory Size: 128 MB
@@ -113,10 +113,10 @@ Max Memory Used: 65 MB
 Billed Duration: 100 ms
 
 Cold-start
-Init Duration: 894.77 ms
+Init Duration: 476.18 ms
 Duration: 88.16 ms
 
-Warm duration
-Duration: ~5ms
-
+Avg warm duration (on 26 executions): 5.88 ms
 ```
+
+The static initialization of HttpClient in GreetingsLambdaHandler helps the warm execution time when doing a REST call.
