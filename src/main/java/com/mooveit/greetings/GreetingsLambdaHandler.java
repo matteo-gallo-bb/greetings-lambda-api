@@ -28,11 +28,20 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
 
     @Override
     public GatewayResponse handleRequest(GatewayRequest gatewayRequest, Context context) {
-
-        final LambdaLogger logger = context.getLogger();
-
         String greetingString = String.format("Hello %s %s", gatewayRequest.getFirstName(), gatewayRequest.getLastName());
 
+        greetingString += gatewayRequest.getAge() != null ? ", your age is: " + gatewayRequest.getAge() : getAgeMessage(context);
+
+        JSONObject responseBodyJson = new JSONObject();
+        responseBodyJson.put("greetings", greetingString);
+
+        return new GatewayResponse(
+                responseBodyJson.toJSONString(),
+                Collections.singletonMap("Content-Type", "application/json"),
+                HTTP_OK);
+    }
+
+    private String getAgeMessage(Context context) {
         // REST call to employee API
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
@@ -46,18 +55,12 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
             if (response.statusCode() == HTTP_OK) {
 
                 EmployeeJson employeeJson = EMPLOYEE_JSON_PARSER.parse(response.body());
-                greetingString += ", your age is: " + employeeJson.getAge();
+                return  ", your age is: " + employeeJson.getAge();
             }
         } catch (IOException | InterruptedException e) {
+            final LambdaLogger logger = context.getLogger();
             logger.log("Error: " + Arrays.toString(e.getStackTrace()));
         }
-
-        JSONObject responseBodyJson = new JSONObject();
-        responseBodyJson.put("greetings", greetingString);
-
-        return new GatewayResponse(
-                responseBodyJson.toJSONString(),
-                Collections.singletonMap("Content-Type", "application/json"),
-                HTTP_OK);
+        return "";
     }
 }

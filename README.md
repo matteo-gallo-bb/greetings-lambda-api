@@ -39,7 +39,17 @@ $ curl -s http://127.0.0.1:3000/greetings?firstName=Matteo&lastName=Gallo
 {
     "greetings": "Hello Matteo Gallo, your age is: 10"
 }
-``` 
+```
+
+Skip the external REST call sending a parameter "age".
+
+```bash
+$ curl -s http://127.0.0.1:3000/greetings?firstName=Matteo&lastName=Gallo&age=1
+
+{
+    "greetings": "Hello Matteo Gallo, your age is: 1"
+}
+```
 
 Alternatively if you want to just invoke the lambda function use the `event.json` file that simulates a request from the API gateway.
 

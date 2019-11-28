@@ -4,6 +4,7 @@
   "resource": "/greetings",
   "queryStringParameters": {
     "firstName": "Matteo",
-    "lastName": "Gallo"
+    "lastName": "Gallo",
+    "age": "31"
   }
 }
