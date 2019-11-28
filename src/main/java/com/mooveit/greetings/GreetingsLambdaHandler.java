@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -26,6 +27,7 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().build();
     private static final EmployeeJsonParser EMPLOYEE_JSON_PARSER = new EmployeeJsonParser(new JSONParser());
 
+    @SuppressWarnings("unchecked")
     @Override
     public GatewayResponse handleRequest(GatewayRequest gatewayRequest, Context context) {
         String greetingString = String.format("Hello %s %s", gatewayRequest.getFirstName(), gatewayRequest.getLastName());
@@ -47,6 +49,7 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
                 .GET()
                 .uri(URI.create(EMPLOYEE_SERVICE_URL))
                 .setHeader("User-Agent", "Java 11 HttpClient Bot")
+                .timeout(Duration.ofMillis(1200))
                 .build();
 
         try {
