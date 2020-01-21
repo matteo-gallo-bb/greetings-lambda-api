@@ -24,8 +24,8 @@ public class GatewayRequest {
         return getParamOrDefault("lastName", "Palla");
     }
 
-    public String getAge() {
-        return queryStringParameters.get("age");
+    public String getSentence() {
+        return queryStringParameters.get("sentence");
     }
 
     private String getParamOrDefault(String paramName, String paramDefaultValue) {

@@ -5,8 +5,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.mooveit.greetings.model.EmployeeJson;
-import com.mooveit.greetings.model.EmployeeJsonParser;
+import com.mooveit.greetings.model.AlbumJson;
+import com.mooveit.greetings.model.AlbumJsonParser;
 import com.mooveit.greetings.model.GatewayRequest;
 import com.mooveit.greetings.model.GatewayResponse;
 import org.json.simple.JSONObject;
@@ -20,19 +20,21 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 
 public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, GatewayResponse> {
 
-    private static final String EMPLOYEE_SERVICE_URL = "http://dummy.restapiexample.com/api/v1/employee/1";
+    private static final String ALBUM_SERVICE_URL = "http://jsonplaceholder.typicode.com/albums/";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().build();
-    private static final EmployeeJsonParser EMPLOYEE_JSON_PARSER = new EmployeeJsonParser(new JSONParser());
+    private static final AlbumJsonParser ALBUM_JSON_PARSER = new AlbumJsonParser(new JSONParser());
+    private static final Random RANDOM = new Random();
 
     @SuppressWarnings("unchecked")
     @Override
     public GatewayResponse handleRequest(GatewayRequest gatewayRequest, Context context) {
         String greetingString = String.format("Hello %s %s", gatewayRequest.getFirstName(), gatewayRequest.getLastName());
 
-        greetingString += gatewayRequest.getAge() != null ? ", your age is: " + gatewayRequest.getAge() : getAgeMessage(context);
+        greetingString += gatewayRequest.getSentence() != null ? ", your sentence of the day: " + gatewayRequest.getSentence() : getSentence(context);
 
         JSONObject responseBodyJson = new JSONObject();
         responseBodyJson.put("greetings", greetingString);
@@ -43,11 +45,11 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
                 HTTP_OK);
     }
 
-    private String getAgeMessage(Context context) {
+    private String getSentence(Context context) {
         // REST call to employee API
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(EMPLOYEE_SERVICE_URL))
+                .uri(URI.create(ALBUM_SERVICE_URL + RANDOM.nextInt(100)))
                 .setHeader("User-Agent", "Java 11 HttpClient Bot")
                 .timeout(Duration.ofMillis(1200))
                 .build();
@@ -57,8 +59,8 @@ public class GreetingsLambdaHandler implements RequestHandler<GatewayRequest, Ga
 
             if (response.statusCode() == HTTP_OK) {
 
-                EmployeeJson employeeJson = EMPLOYEE_JSON_PARSER.parse(response.body());
-                return  ", your age is: " + employeeJson.getAge();
+                AlbumJson albumJson = ALBUM_JSON_PARSER.parse(response.body());
+                return  ", your sentence of the day: " + albumJson.getTitle();
             }
         } catch (IOException | InterruptedException e) {
             final LambdaLogger logger = context.getLogger();
